@@ -3,6 +3,7 @@ var runSequence = require('run-sequence');
 var packageJson = require('./package.json');
 var prompt = require('gulp-prompt');
 var gulpGit = require('gulp-git');
+var gulpBump = require('gulp-bump')
 
 let args = {};
 let baseDirectory = './';
@@ -10,6 +11,7 @@ let baseDirectory = './';
 gulp.task('prepare-qa', (done) => {
     runSequence('qa-select-branch',
         'git-clean',
+        'gulp-bump',
         done);
 });
 
@@ -25,12 +27,27 @@ gulp.task('qa-select-branch', (done) => {
             done();
         }));
 });
- 
-// Why is a path given there?
+
 gulp.task('git-clean', (done) => {
-    gulpGit.clean({ cwd:baseDirectory, args: '-f' }, (err) => {
+    gulpGit.clean({ args: '-f' }, (err) => {
         if (err) return done(err);
         console.log('Cleaned the branch successfully');
         done();
     });
+});
+
+gulp.task('gulp-bump', (done) => {
+    console.log('About to bump the version.');
+    gulp.src('./package.json')
+        .pipe(prompt.prompt({
+            type: 'input',
+            name: 'releaseType',
+            message: 'Is it a major/minor/patch release?'
+        }, (res) => {
+            args.releaseType = res.releaseType;
+            gulp.src('./package.json')
+                .pipe(gulpBump({ type: args.releaseType }))
+                .pipe(gulp.dest('./'));
+            done();
+        }));
 });
