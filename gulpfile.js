@@ -22,10 +22,10 @@ gulp.task('qa-select-branch', (done) => {
         }, function (res) {
             console.log('Chosen branch is: ', res.branchName);
             args.branchName = res.branchName;
+            done();
         }));
-    done();
 });
-
+ 
 // Why is a path given there?
 gulp.task('git-clean', (done) => {
     gulpGit.clean({ cwd:baseDirectory, args: '-f' }, (err) => {
