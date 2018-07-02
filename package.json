@@ -1,6 +1,6 @@
 {
   "name": "gulp-for-uideployment-sample",
-  "version": "V1.0.0",
+  "version": "1.0.1-qa.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -26,6 +26,7 @@
     "gulp-git": "^2.7.0",
     "gulp-prompt": "^1.0.1",
     "rxjs": "^5.5.6",
+    "semver": "^5.5.0",
     "zone.js": "^0.8.19"
   },
   "devDependencies": {

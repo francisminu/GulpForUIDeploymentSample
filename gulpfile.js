@@ -4,15 +4,18 @@ var packageJson = require('./package.json');
 var prompt = require('gulp-prompt');
 var gulpGit = require('gulp-git');
 var gulpBump = require('gulp-bump')
+var semver = require('semver');
 
 let args = {};
 let baseDirectory = './';
 
 gulp.task('prepare-qa', (done) => {
-    runSequence('qa-select-branch',
-        'git-clean',
-        'git-checkout',
-        'git-pull',
+    runSequence(
+        // 'qa-select-branch',
+        // 'git-clean',
+        // 'git-checkout',
+        // 'git-pull',
+        'get-semantic-version',
         // 'gulp-bump',
         done);
 });
@@ -47,11 +50,25 @@ gulp.task('git-checkout', (done) => {
 });
 
 gulp.task('git-pull', (done) => {
-    gulpGit.pull('origin', args.branchName, {args: '--rebase'}, (err)=> {
-        if(err) return done(err);
+    gulpGit.pull('origin', args.branchName, { args: '--rebase' }, (err) => {
+        if (err) return done(err);
         console.log('Branch ', args.branchName + ' pulled successfully from Origin');
         done();
     });
+});
+
+gulp.task('get-semantic-version', (done) => {
+    var currentVersion = packageJson.version;
+    console.log('Current Version: ', currentVersion);
+    var newVersion = semver.inc(currentVersion, 'prerelease', 'qa');
+    console.log('New Version: ', newVersion);
+    gulp.src(['package.json'])
+        .pipe(gulpBump({
+            version: newVersion,
+            type: 'prerelease'
+        }))
+        .pipe(gulp.dest('./'));
+        done();
 });
 
 gulp.task('gulp-bump', (done) => {
