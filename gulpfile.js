@@ -11,7 +11,9 @@ let baseDirectory = './';
 gulp.task('prepare-qa', (done) => {
     runSequence('qa-select-branch',
         'git-clean',
-        'gulp-bump',
+        'git-checkout',
+        'git-pull',
+        // 'gulp-bump',
         done);
 });
 
@@ -32,6 +34,22 @@ gulp.task('git-clean', (done) => {
     gulpGit.clean({ args: '-f' }, (err) => {
         if (err) return done(err);
         console.log('Cleaned the branch successfully');
+        done();
+    });
+});
+
+gulp.task('git-checkout', (done) => {
+    gulpGit.checkout(args.branchName, (err) => {
+        if (err) return done(err);
+        console.log('Branch ', args.branchName + ' Checked Out successfully');
+        done();
+    });
+});
+
+gulp.task('git-pull', (done) => {
+    gulpGit.pull('origin', args.branchName, {args: '--rebase'}, (err)=> {
+        if(err) return done(err);
+        console.log('Branch ', args.branchName + ' pulled successfully from Origin');
         done();
     });
 });
