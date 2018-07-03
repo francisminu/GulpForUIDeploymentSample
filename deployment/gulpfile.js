@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
-var packageJson = require('./package.json');
+var packageJson = require('../package.json');
 var prompt = require('gulp-prompt');
 var gulpGit = require('gulp-git');
 var gulpBump = require('gulp-bump')
@@ -8,7 +8,7 @@ var semver = require('semver');
 var exec = require('child_process').exec;
 
 let args = {};
-let baseDirectory = './';
+let baseDirectory = '../';
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
@@ -27,7 +27,7 @@ gulp.task('prepare-qa', (done) => {
 });
 
 gulp.task('qa-select-branch', (done) => {
-    gulp.src('./package.json')
+    gulp.src(baseDirectory + 'package.json')
         .pipe(prompt.prompt({
             type: 'input',
             name: 'branchName',
@@ -69,7 +69,7 @@ gulp.task('get-semantic-version', (done) => {
     var newVersion = semver.inc(currentVersion, 'prerelease', 'qa');
     console.log('New Version: ', newVersion);
     args.newVersion = newVersion;
-    gulp.src(['package.json'])
+    gulp.src([baseDirectory + 'package.json'])
         .pipe(gulpBump({
             version: newVersion,
             type: 'prerelease'
@@ -96,13 +96,13 @@ gulp.task('get-semantic-version', (done) => {
 
 gulp.task('git-add', (done) => {
     console.log('Staging package.json');
-    return gulp.src(['./package.json'])
+    return gulp.src([baseDirectory + 'package.json'])
         .pipe(gulpGit.add());
 });
 
 gulp.task('git-commit', (done) => {
     console.log('Commiting package.json');
-    return gulp.src(['./package.json'])
+    return gulp.src([baseDirectory + 'package.json'])
         .pipe(gulpGit.commit('build(release): version upgraded to ' + args.newVersion));
 });
 
