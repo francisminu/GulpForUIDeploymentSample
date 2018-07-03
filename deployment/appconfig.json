@@ -1,0 +1,12 @@
+{
+    "qa_servers": [
+        {
+            "name": "PDC00TKSW302W.GNACLUS.LOCAL",
+            "ip": "10.202.90.23"
+        },
+        {
+            "name": "PDC00TKSW303W.GNACLUS.LOCAL",
+            "ip": "10.202.90.24"
+        }
+    ]
+}

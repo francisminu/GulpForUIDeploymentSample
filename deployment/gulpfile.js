@@ -9,37 +9,31 @@ var exec = require('child_process').exec;
 var zip = require('gulp-zip');
 var FtpDeploy = require('ftp-deploy');
 var ftpDeploy = new FtpDeploy();
+var appconfig = require('./appconfig.json');
+var neoAsync = require('neo-async');
 
 let args = {};
 let baseDirectory = '../';
 
-var config = {
-    user: "ohl\\aa-mfrancis",                   // NOTE that this was username in 1.x 
-    password: "Geodis123",           // optional, prompted if none given
-    host: "10.202.90.23",
-    port: 21,
-    localRoot: './output/',
-    remoteRoot: 'dist',
-    include: ['*'],
-    exclude: [],
-    deleteRoot: true
-}
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
-        'qa-select-branch',
-        'git-clean',
-        'git-checkout',
-        'git-pull',
-        'get-semantic-version',
-        'git-add',
-        'git-commit',
-        'git-tag',
-        'git-push',
-        'git-push-tags',
-        'build-files',
-        'zip-files',
-        'ftp-filecopy',
+        // 'qa-select-branch',
+        // 'git-clean',
+        // 'git-checkout',
+        // 'git-pull',
+        // 'get-semantic-version',
+        // 'git-add',
+        // 'git-commit',
+        // 'git-tag',
+        // 'git-push',
+        // 'git-push-tags',
+        // 'build-files',
+        // 'zip-files',
+        'get-credentials',
+        'get-qa-servers',
+        'login-and-copy-to-servers',
+        //'ftp-filecopy',
         done);
 });
 
@@ -176,13 +170,92 @@ gulp.task('zip-files', (done) => {
     done();
 });
 
-gulp.task('ftp-filecopy', () => {
-    ftpDeploy.deploy(config, function (err) {
-        if (err) console.log(err)
-        else console.log('finished');
-    });
-    ftpDeploy.on('uploaded', function (data) {
-        console.log('On Upload');
-        console.log(data);         // same data as uploading event
+gulp.task('get-credentials', () => {
+    gulp.src(baseDirectory + 'package.json')
+        .pipe(prompt.prompt(
+            [{
+                type: 'input',
+                name: 'username',
+                message: 'Please enter the username: ',
+                validate: (username) => {
+                    if (username === '') return false;
+                    else return true;
+                }
+            },
+            {
+                type: 'password',
+                name: 'password',
+                message: 'Please enter the password: ',
+                validate: (password) => {
+                    if (password === '') return false;
+                    else return true;
+                }
+            }
+            ], (res) => {
+                args.username = 'ohl\\' + res.username;
+                args.password = res.password;
+                console.log('Username and Password obtained.');
+            }));
+});
+
+gulp.task('get-qa-servers', (done) => {
+    let serverList = [];
+    for (let index = 0; index < appconfig.qa_servers.length; index++) {
+        serverList.push(appconfig.qa_servers[index].ip + '(' + appconfig.qa_servers[index].name + ')');
+    }
+    gulp.src(baseDirectory + 'package.json')
+        .pipe(prompt.prompt({
+            type: 'checkbox',
+            name: 'servers',
+            message: 'Choose the QA servers for deployment: ',
+            choices: serverList,
+            validate: (servers) => {
+                let serverList = servers || [];
+                if (serverList.length === 0) return false;
+                else return true;
+            }
+        }, function (res) {
+            args.servers = res.servers;
+            done();
+        }));
+});
+
+var config = {
+    user: "ohl\\aa-mfrancis",                   // NOTE that this was username in 1.x 
+    password: "Geodis123",           // optional, prompted if none given
+    host: "10.202.90.23",
+    port: 21,
+    localRoot: './output/',
+    remoteRoot: 'dist',
+    include: ['*'],
+    exclude: [],
+    deleteRoot: true
+}
+
+gulp.task('login-and-copy-to-servers', (done) => {
+    neoAsync.eachSeries(args.servers, (server, done) => {
+        let ftpConfig = {
+            user: args.username,
+            password: args.password,
+            host: server,
+            port: 21,
+            localRoot: './output/',
+            remoteRoot: 'dist',
+            include: ['*'],
+            exclude: [],
+            deleteRoot: true
+        };
+        console.log('Copying files to ' + server + ' started');
+        ftpDeploy.deploy(config, function (err) {
+            if (err) console.log(err)
+            else console.log('Copied files successfully to server ', server);
+        });
+        ftpDeploy.on('uploaded', function (data) {
+            console.log('On Upload');
+            console.log(data);  
+        });
+    }, (result) => {
+        console.log('Copied files to all the servers!!!');
+        callback();
     });
 });
