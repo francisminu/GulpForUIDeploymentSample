@@ -6,10 +6,24 @@ var gulpGit = require('gulp-git');
 var gulpBump = require('gulp-bump')
 var semver = require('semver');
 var exec = require('child_process').exec;
-const zip = require('gulp-zip');
+var zip = require('gulp-zip');
+var FtpDeploy = require('ftp-deploy');
+var ftpDeploy = new FtpDeploy();
 
 let args = {};
 let baseDirectory = '../';
+
+var config = {
+    user: "ohl\\aa-mfrancis",                   // NOTE that this was username in 1.x 
+    password: "Geodis123",           // optional, prompted if none given
+    host: "10.202.90.23",
+    port: 21,
+    localRoot: './output/',
+    remoteRoot: 'dist',
+    include: ['*'],
+    exclude: [],
+    deleteRoot: true
+}
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
@@ -25,6 +39,7 @@ gulp.task('prepare-qa', (done) => {
         'git-push-tags',
         'build-files',
         'zip-files',
+        'ftp-filecopy',
         done);
 });
 
@@ -159,4 +174,15 @@ gulp.task('zip-files', (done) => {
         .pipe(gulp.dest('./output'));
     console.log('Zipping complete.');
     done();
+});
+
+gulp.task('ftp-filecopy', () => {
+    ftpDeploy.deploy(config, function (err) {
+        if (err) console.log(err)
+        else console.log('finished');
+    });
+    ftpDeploy.on('uploaded', function (data) {
+        console.log('On Upload');
+        console.log(data);         // same data as uploading event
+    });
 });
