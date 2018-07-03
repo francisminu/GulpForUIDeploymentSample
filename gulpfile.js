@@ -109,6 +109,7 @@ gulp.task('git-tag', (done) => {
         if(err) return done(err);
         console.log('Tagged the ' + args.branchName + ' branch with Version ' + args.newVersion);
     });
+    done();
 });
 
 gulp.task('git-push', (done) => {
@@ -117,6 +118,7 @@ gulp.task('git-push', (done) => {
         if(err) return done(err);
         console.log('Pushed ' + args.branchName + 'to origin/' + args.branchName);
     });
+    done();
 });
 
 gulp.task('git-push-tags', (done) => {
@@ -125,4 +127,5 @@ gulp.task('git-push-tags', (done) => {
         if(err) return done(err);
         console.log('All tags pushed from local to remote');
     });
+    done();
 });
