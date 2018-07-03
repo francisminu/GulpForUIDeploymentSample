@@ -18,6 +18,7 @@ gulp.task('prepare-qa', (done) => {
         'get-semantic-version',
         'git-add',
         'git-commit',
+        'git-push',
         done);
 });
 
@@ -89,14 +90,22 @@ gulp.task('get-semantic-version', (done) => {
 //         }));
 // });
 
-gulp.task('git-add', () => {
+gulp.task('git-add', (done) => {
     console.log('Staging package.json');
     return gulp.src(['./package.json'])
         .pipe(gulpGit.add());
 });
 
-gulp.task('git-commit', () => {
+gulp.task('git-commit', (done) => {
     console.log('Commiting package.json');
     return gulp.src(['./package.json'])
         .pipe(gulpGit.commit('build(release): version upgraded to ' + args.newVersion));
+});
+
+gulp.task('git-push', (done) => {
+    console.log('Push commits to origin');
+    return gulpGit.push('origin', args.branchName, (err) => {
+        if(err) return done(err);
+        console.log('Pushed ' + args.branchName + 'to origin/' + args.branchName);
+    })
 });
