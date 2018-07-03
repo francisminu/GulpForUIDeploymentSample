@@ -6,6 +6,9 @@
 /tmp
 /out-tsc
 
+# Deployment files
+/deployment/output
+
 # dependencies
 /node_modules
 
