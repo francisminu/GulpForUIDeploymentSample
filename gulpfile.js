@@ -105,11 +105,11 @@ gulp.task('git-commit', (done) => {
 });
 
 gulp.task('git-tag', (done) => {
-    return gulpGit.tag(args.newVersion, 'Tag created: ' + args.newVersion, (err) => {
+    gulpGit.tag(args.newVersion, 'Tag created: ' + args.newVersion, (err) => {
         if(err) return done(err);
         console.log('Tagged the ' + args.branchName + ' branch with Version ' + args.newVersion);
+        done();
     });
-    done();
 });
 
 gulp.task('git-push', (done) => {
