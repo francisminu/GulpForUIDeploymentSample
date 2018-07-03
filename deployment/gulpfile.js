@@ -196,6 +196,7 @@ gulp.task('get-credentials', () => {
                 console.log('Username and Password obtained.');
                 done();
             }));
+    done();
 });
 
 gulp.task('get-qa-servers', (done) => {
@@ -218,6 +219,7 @@ gulp.task('get-qa-servers', (done) => {
             args.servers = res.servers;
             done();
         }));
+    done();
 });
 
 var config = {
