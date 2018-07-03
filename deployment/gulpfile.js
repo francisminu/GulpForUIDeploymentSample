@@ -194,6 +194,7 @@ gulp.task('get-credentials', () => {
                 args.username = 'ohl\\' + res.username;
                 args.password = res.password;
                 console.log('Username and Password obtained.');
+                done();
             }));
 });
 
