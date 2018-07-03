@@ -1,6 +1,6 @@
 {
   "name": "gulp-for-uideployment-sample",
-  "version": "1.0.0-qa.8",
+  "version": "1.0.0-qa.9",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
