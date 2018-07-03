@@ -105,7 +105,7 @@ gulp.task('git-commit', (done) => {
 });
 
 gulp.task('git-tag', (done) => {
-    gulpGit.tag(args.newVersion, 'Tag created: ' + args.newVersion, (err) => {
+    gulpGit.tag('v' + args.newVersion, 'Tag created: ' + args.newVersion, (err) => {
         if(err) return done(err);
         console.log('Tagged the ' + args.branchName + ' branch with Version ' + args.newVersion);
         done();
@@ -114,18 +114,18 @@ gulp.task('git-tag', (done) => {
 
 gulp.task('git-push', (done) => {
     console.log('Push commits to origin');
-    return gulpGit.push('origin', args.branchName, (err) => {
+    gulpGit.push('origin', args.branchName, (err) => {
         if(err) return done(err);
-        console.log('Pushed ' + args.branchName + 'to origin/' + args.branchName);
+        console.log('Pushed ' + args.branchName + ' to origin/' + args.branchName);
+        done();
     });
-    done();
 });
 
 gulp.task('git-push-tags', (done) => {
     console.log('Pushing all the tags from local to remote');
-    return gulpGit.exec({args: 'push --tags'}, (err) => {
+    gulpGit.exec({args: 'push --tags'}, (err) => {
         if(err) return done(err);
         console.log('All tags pushed from local to remote');
+        done();
     });
-    done();
 });
