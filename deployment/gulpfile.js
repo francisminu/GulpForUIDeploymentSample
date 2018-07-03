@@ -76,7 +76,7 @@ gulp.task('get-semantic-version', (done) => {
             version: newVersion,
             type: 'prerelease'
         }))
-        .pipe(gulp.dest('./'));
+        .pipe(gulp.dest(baseDirectory));
     done();
 });
 
