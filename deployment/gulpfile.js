@@ -169,7 +169,7 @@ gulp.task('zip-files', (done) => {
     done();
 });
 
-gulp.task('get-credentials', () => {
+gulp.task('get-credentials', (done) => {
     gulp.src(baseDirectory + 'package.json')
         .pipe(prompt.prompt(
             [{
