@@ -7,23 +7,24 @@ var gulpBump = require('gulp-bump')
 var semver = require('semver');
 var exec = require('child_process').exec;
 const zip = require('gulp-zip');
+var moment = require('moment');
 
 let args = {};
 let baseDirectory = '../';
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
-        'qa-select-branch',
-        'git-clean',
-        'git-checkout',
-        'git-pull',
-        'get-semantic-version',
-        'git-add',
-        'git-commit',
-        'git-tag',
-        'git-push',
-        'git-push-tags',
-        'build-files',
+        // 'qa-select-branch',
+        // 'git-clean',
+        // 'git-checkout',
+        // 'git-pull',
+        // 'get-semantic-version',
+        // 'git-add',
+        // 'git-commit',
+        // 'git-tag',
+        // 'git-push',
+        // 'git-push-tags',
+        // 'build-files',
         'zip-files',
         done);
 });
