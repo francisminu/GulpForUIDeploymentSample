@@ -6,6 +6,7 @@ var gulpGit = require('gulp-git');
 var gulpBump = require('gulp-bump')
 var semver = require('semver');
 var exec = require('child_process').exec;
+const zip = require('gulp-zip');
 
 let args = {};
 let baseDirectory = '../';
@@ -23,6 +24,7 @@ gulp.task('prepare-qa', (done) => {
         'git-push',
         'git-push-tags',
         'build-files',
+        'zip-files',
         done);
 });
 
@@ -103,7 +105,7 @@ gulp.task('git-add', (done) => {
 gulp.task('git-commit', (done) => {
     console.log('Commiting package.json');
     return gulp.src([baseDirectory + 'package.json'])
-        .pipe(gulpGit.commit('build(release): version upgraded to ' + args.newVersion));
+        .pipe(gulpGit.commit('build(release): version upgraded to v' + args.newVersion));
 });
 
 gulp.task('git-tag', (done) => {
@@ -134,7 +136,27 @@ gulp.task('git-push-tags', (done) => {
 
 gulp.task('build-files', (done) => {
     exec('ng build --prod', (err, stdout, stderr) => {
-        if(err) return done(err);
+        if (err) return done(err);
         done();
     });
+});
+
+// gulp.task('tar-and-zip', (done) => {
+//     console.log('Zipping the target files');
+//     exec('"./utils/7zip/7za.exe" a -ttar -so archive.tar rfframework | "../utils/7zip/7za.exe" a -si "output/rfframework.tgz"',
+//     (err, stdout, stderr) => {
+//       console.log(stdout);
+//       console.log(stderr);
+//       callback(err);
+//     });
+//   console.log(successFormat('Compressed the src files successfully!!!'));
+// });
+
+gulp.task('zip-files', (done) => {
+    console.log('Zipping files..');
+    gulp.src(baseDirectory + 'dist/*')
+        .pipe(zip('buildFiles.zip'))
+        .pipe(gulp.dest('./output'));
+    console.log('Zipping complete.');
+    done();
 });
