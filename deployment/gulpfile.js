@@ -258,6 +258,6 @@ gulp.task('login-and-copy-to-servers', (done) => {
         });
     }, (result) => {
         console.log('Copied files to all the servers!!!');
-        callback();
+        done();
     });
 });
