@@ -18,22 +18,21 @@ let baseDirectory = '../';
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
-        // 'qa-select-branch',
-        // 'git-clean',
-        // 'git-checkout',
-        // 'git-pull',
-        // 'get-semantic-version',
-        // 'git-add',
-        // 'git-commit',
-        // 'git-tag',
-        // 'git-push',
-        // 'git-push-tags',
-        // 'build-files',
-        // 'zip-files',
+        'qa-select-branch',
+        'git-clean',
+        'git-checkout',
+        'git-pull',
+        'get-semantic-version',
+        'git-add',
+        'git-commit',
+        'git-tag',
+        'git-push',
+        'git-push-tags',
+        'build-files',
+        'zip-files',
         'get-credentials',
         'get-qa-servers',
         'login-and-copy-to-servers',
-        //'ftp-filecopy',
         done);
 });
 
