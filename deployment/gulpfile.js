@@ -196,7 +196,6 @@ gulp.task('get-credentials', (done) => {
                 console.log('Username and Password obtained.');
                 done();
             }));
-    done();
 });
 
 gulp.task('get-qa-servers', (done) => {
@@ -217,29 +216,17 @@ gulp.task('get-qa-servers', (done) => {
             }
         }, function (res) {
             args.servers = res.servers;
+            console.log('Servers are: ', args.servers);
             done();
         }));
-    done();
 });
-
-var config = {
-    user: "ohl\\aa-mfrancis",                   // NOTE that this was username in 1.x 
-    password: "Geodis123",           // optional, prompted if none given
-    host: "10.202.90.23",
-    port: 21,
-    localRoot: './output/',
-    remoteRoot: 'dist',
-    include: ['*'],
-    exclude: [],
-    deleteRoot: true
-}
 
 gulp.task('login-and-copy-to-servers', (done) => {
     neoAsync.eachSeries(args.servers, (server, done) => {
         let ftpConfig = {
             user: args.username,
             password: args.password,
-            host: server,
+            host: server.split('(')[0],
             port: 21,
             localRoot: './output/',
             remoteRoot: 'dist',
@@ -248,13 +235,13 @@ gulp.task('login-and-copy-to-servers', (done) => {
             deleteRoot: true
         };
         console.log('Copying files to ' + server + ' started');
-        ftpDeploy.deploy(config, function (err) {
-            if (err) console.log(err)
-            else console.log('Copied files successfully to server ', server);
+        ftpDeploy.deploy(ftpConfig, (err) => {
+            if (err) return done(err)
+            done();
         });
         ftpDeploy.on('uploaded', function (data) {
             console.log('On Upload');
-            console.log(data);  
+            console.log(data);
         });
     }, (result) => {
         console.log('Copied files to all the servers!!!');
