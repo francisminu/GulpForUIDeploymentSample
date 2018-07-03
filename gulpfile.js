@@ -11,12 +11,13 @@ let baseDirectory = './';
 
 gulp.task('prepare-qa', (done) => {
     runSequence(
-        // 'qa-select-branch',
-        // 'git-clean',
-        // 'git-checkout',
-        // 'git-pull',
+        'qa-select-branch',
+        'git-clean',
+        'git-checkout',
+        'git-pull',
         'get-semantic-version',
-        // 'gulp-bump',
+        'git-add',
+        'git-commit',
         done);
 });
 
@@ -62,27 +63,40 @@ gulp.task('get-semantic-version', (done) => {
     console.log('Current Version: ', currentVersion);
     var newVersion = semver.inc(currentVersion, 'prerelease', 'qa');
     console.log('New Version: ', newVersion);
+    args.newVersion = newVersion;
     gulp.src(['package.json'])
         .pipe(gulpBump({
             version: newVersion,
             type: 'prerelease'
         }))
         .pipe(gulp.dest('./'));
-        done();
+    done();
 });
 
-gulp.task('gulp-bump', (done) => {
-    console.log('About to bump the version.');
-    gulp.src('./package.json')
-        .pipe(prompt.prompt({
-            type: 'input',
-            name: 'releaseType',
-            message: 'Is it a major/minor/patch release?'
-        }, (res) => {
-            args.releaseType = res.releaseType;
-            gulp.src('./package.json')
-                .pipe(gulpBump({ type: args.releaseType }))
-                .pipe(gulp.dest('./'));
-            done();
-        }));
+// gulp.task('gulp-bump', (done) => {
+//     console.log('About to bump the version.');
+//     gulp.src('./package.json')
+//         .pipe(prompt.prompt({
+//             type: 'input',
+//             name: 'releaseType',
+//             message: 'Is it a major/minor/patch release?'
+//         }, (res) => {
+//             args.releaseType = res.releaseType;
+//             gulp.src('./package.json')
+//                 .pipe(gulpBump({ type: args.releaseType }))
+//                 .pipe(gulp.dest('./'));
+//             done();
+//         }));
+// });
+
+gulp.task('git-add', () => {
+    console.log('Staging package.json');
+    return gulp.src(['./package.json'])
+        .pipe(gulpGit.add());
+});
+
+gulp.task('git-commit', () => {
+    console.log('Commiting package.json');
+    return gulp.src(['./package.json'])
+        .pipe(gulpGit.commit('build(release): version upgraded to ' + args.newVersion));
 });
