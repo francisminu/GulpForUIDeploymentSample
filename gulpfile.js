@@ -5,6 +5,7 @@ var prompt = require('gulp-prompt');
 var gulpGit = require('gulp-git');
 var gulpBump = require('gulp-bump')
 var semver = require('semver');
+var exec = require('child_process').exec;
 
 let args = {};
 let baseDirectory = './';
@@ -21,6 +22,7 @@ gulp.task('prepare-qa', (done) => {
         'git-tag',
         'git-push',
         'git-push-tags',
+        'build-files',
         done);
 });
 
@@ -106,7 +108,7 @@ gulp.task('git-commit', (done) => {
 
 gulp.task('git-tag', (done) => {
     gulpGit.tag('v' + args.newVersion, 'Tag created: ' + args.newVersion, (err) => {
-        if(err) return done(err);
+        if (err) return done(err);
         console.log('Tagged the ' + args.branchName + ' branch with Version ' + args.newVersion);
         done();
     });
@@ -115,7 +117,7 @@ gulp.task('git-tag', (done) => {
 gulp.task('git-push', (done) => {
     console.log('Push commits to origin');
     gulpGit.push('origin', args.branchName, (err) => {
-        if(err) return done(err);
+        if (err) return done(err);
         console.log('Pushed ' + args.branchName + ' to origin/' + args.branchName);
         done();
     });
@@ -123,9 +125,16 @@ gulp.task('git-push', (done) => {
 
 gulp.task('git-push-tags', (done) => {
     console.log('Pushing all the tags from local to remote');
-    gulpGit.exec({args: 'push --tags'}, (err) => {
-        if(err) return done(err);
+    gulpGit.exec({ args: 'push --tags' }, (err) => {
+        if (err) return done(err);
         console.log('All tags pushed from local to remote');
+        done();
+    });
+});
+
+gulp.task('build-files', (done) => {
+    exec('ng build --prod', (err, stdout, stderr) => {
+        if(err) return done(err);
         done();
     });
 });
