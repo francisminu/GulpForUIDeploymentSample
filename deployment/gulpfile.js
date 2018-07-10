@@ -205,7 +205,7 @@ gulp.task('get-qa-servers', (done) => {
     console.log(infoLog('Fetching QA Servers...'));
     let serverList = [];
     for (let index = 0; index < appconfig.qa_servers.length; index++) {
-        serverList.push(appconfig.qa_servers[index].ip + '(' + appconfig.qa_servers[index].name + ')');
+        serverList.push(appconfig.qa_servers[index].ipAddress + '(' + appconfig.qa_servers[index].serverName + ')');
     }
     gulp.src(baseDirectory + 'package.json')
         .pipe(prompt.prompt({
