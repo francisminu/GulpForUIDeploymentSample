@@ -154,7 +154,7 @@ gulp.task('git-push-tags', (done) => {
 });
 
 gulp.task('build-files', (done) => {
-    exec('ng build --args.currentDeploymentEnv', (err, stdout, stderr) => {
+    exec('ng build --environment=args.currentDeploymentEnv', (err, stdout, stderr) => {
         if (err) {
             console.log(errorLog('build-files failed. Error: ', err));
             return done(err);
