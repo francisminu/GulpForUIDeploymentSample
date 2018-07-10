@@ -12,23 +12,16 @@ var ftpDeploy = new FtpDeploy();
 var appconfig = require('./appconfig.json');
 var neoAsync = require('neo-async');
 var colors = require('colors');
+var CLIOptions = require('@angular/cli');
 
 let args = {};
 let baseDirectory = '../';
 
 var infoLog = colors.green;
-var debugLog = colors.green;
-var warningLog = colors.green;
-var errorLog = colors.green;
+var debugLog = colors.white;
+var warningLog = colors.yellow;
+var errorLog = colors.red;
 var userInput = colors.cyan;
-
-// colors.setTheme({
-//     info: 'green',
-//     warn: 'yellow',
-//     debug: 'blue',
-//     error: 'red',
-//     userInput: 'italic'
-// });
 
 
 gulp.task('prepare-qa', (done) => {
@@ -52,6 +45,7 @@ gulp.task('prepare-qa', (done) => {
 });
 
 gulp.task('qa-select-branch', (done) => {
+    args.currentDeploymentEnv = 'qa';
     gulp.src(baseDirectory + 'package.json')
         .pipe(prompt.prompt({
             type: 'input',
@@ -160,7 +154,7 @@ gulp.task('git-push-tags', (done) => {
 });
 
 gulp.task('build-files', (done) => {
-    exec('ng build --prod', (err, stdout, stderr) => {
+    exec('ng build --args.currentDeploymentEnv', (err, stdout, stderr) => {
         if (err) {
             console.log(errorLog('build-files failed. Error: ', err));
             return done(err);
@@ -253,10 +247,15 @@ gulp.task('login-and-copy-to-servers', (done) => {
             done();
         });
         ftpDeploy.on('uploaded', function (data) {
-            console.log(infoLog('Uploaded the data'));
+            console.log(infoLog('Uploaded the files'));
         });
     }, (result) => {
         console.log(infoLog('Copied files to all the servers!!!'));
         done();
     });
 });
+
+// gulp.task('get-config', () => {
+//     let env = CLIOptions.getEnvironment();
+//     console.log('Evn is: ', env);
+// });
