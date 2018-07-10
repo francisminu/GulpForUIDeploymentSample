@@ -239,7 +239,7 @@ gulp.task('login-and-copy-to-servers', (done) => {
             host: server.split('(')[0],
             port: 21,
             localRoot: './output/',
-            remoteRoot: 'output',
+            remoteRoot: 'deployment/output',
             include: ['*'],
             exclude: [],
             deleteRoot: true
